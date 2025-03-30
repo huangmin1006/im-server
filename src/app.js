@@ -1,83 +1,38 @@
 const express = require("express");
-const bodyParser = require("body-parser");
-const bcrypt = require("bcryptjs");
-const db = require("./db");
+const cors = require("cors");
+const userRoutes = require("./routes/userRoutes");
+const authRoutes = require("./routes/authRoutes");
+const userInfoRoutes = require("./routes/userInfoRoutes");
 
 const app = express();
-app.use(bodyParser.json());
+const port = process.env.PORT || 8888;
 
-// 创建users表（如果不存在）
-async function createTable() {
-  try {
-    const connection = await db.getConnection();
-    await connection.query(`
-      CREATE TABLE IF NOT EXISTS users (
-        id INT AUTO_INCREMENT PRIMARY KEY,
-        username VARCHAR(50) NOT NULL UNIQUE,
-        password VARCHAR(255) NOT NULL,
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-      )
-    `);
-    connection.release();
-    console.log("Users table ready");
-  } catch (error) {
-    console.error("Error creating table:", error);
-  }
-}
+// 中间件配置
+app.use(cors()); // 允许跨域请求
+app.use(express.json()); // 解析JSON请求体
+app.use(express.urlencoded({ extended: true })); // 解析URL编码的请求体
 
-// 用户注册
-app.post("/register", async (req, res) => {
-  try {
-    const { username, password } = req.body;
+// 路由配置
+app.use("/api/users", userRoutes); // 用户相关路由
+app.use("/api/auth", authRoutes); // 认证相关路由
+app.use("/api/user", userInfoRoutes); // 用户信息路由
 
-    // 密码加密
-    const hashedPassword = await bcrypt.hash(password, 10);
-
-    const [result] = await db.query(
-      "INSERT INTO users (username, password) VALUES (?, ?)",
-      [username, hashedPassword]
-    );
-
-    res.status(201).json({ message: "User registered successfully" });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: "Registration failed" });
-  }
+// 测试路由
+app.get("/", (req, res) => {
+  res.json({ message: "服务器运行正常" });
 });
 
-// 用户登录
-app.post("/login", async (req, res) => {
-  try {
-    const { username, password } = req.body;
-
-    const [users] = await db.query("SELECT * FROM users WHERE username = ?", [
-      username,
-    ]);
-
-    if (users.length === 0) {
-      return res.status(401).json({ error: "User not found" });
-    }
-
-    const user = users[0];
-    const passwordMatch = await bcrypt.compare(password, user.password);
-
-    if (!passwordMatch) {
-      return res.status(401).json({ error: "Invalid credentials" });
-    }
-
-    res.json({
-      message: "Login successful",
-      user: { id: user.id, username: user.username },
-    });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: "Login failed" });
-  }
+// 错误处理中间件
+app.use((err, req, res, next) => {
+  console.error("错误详情:", err);
+  res.status(500).json({
+    code: 500,
+    message: "服务器内部错误",
+    error: err.message || err,
+  });
 });
 
 // 启动服务器
-const PORT = 8888;
-app.listen(PORT, async () => {
-  await createTable();
-  console.log(`Server running on http://localhost:${PORT}`);
+app.listen(port, () => {
+  console.log(`服务器运行在 http://localhost:${port}`);
 });

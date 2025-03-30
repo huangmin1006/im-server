@@ -3,9 +3,6 @@ const router = express.Router();
 const userController = require("../controllers/userController");
 const authMiddleware = require("../middleware/authMiddleware");
 
-// 用户注册路由
-router.post("/register", userController.register);
-
 // 登录路由
 router.post("/login", userController.login);
 

@@ -1,0 +1,31 @@
+@host = http://localhost:8888
+
+
+
+
+###
+GET {{host}}/api/users/list
+Content-Type: application/json
+GET {{host}}/api/users/list
+Content-Type: application/json
+###
+POST {{host}}/api/users/register
+Content-Type: application/json
+
+{
+  "username": "test_user",
+  "password": "123456",
+  "nickname": "测试用户",
+  "avatar": "https://example.com/avatar.jpg",
+  "gender": "male",
+  "birthday": "1990-01-01",
+  "phone": "13800138000",
+  "email": "test@example.com",
+  "signature": "这是我的个性签名",
+  "device_info": {
+    "device_type": "mobile",
+    "device_name": "iPhone 12",
+    "os_version": "iOS 15.0",
+    "app_version": "1.0.0"
+  }
+}

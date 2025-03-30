@@ -1,0 +1,71 @@
+### 服务器状态检查
+@host = http://localhost:8888
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwidXNlcm5hbWUiOiJ2YmVuIiwiaWF0IjoxNzQzMzM3NDY4LCJleHAiOjE3NDM0MjM4Njh9.jjDbEGLezwZyyZECnbvB4UILzvDm8Qv2UZ95vnnKIyQ
+
+### 管理员登录
+POST {{host}}/api/auth/login
+Content-Type: application/json
+
+{
+  "username": "vben",
+  "password": "123456"
+}
+
+### 用户登录
+POST {{host}}/api/auth/login
+Content-Type: application/json
+
+{
+  "username": "test_user",
+  "password": "123456"
+}
+
+### 退出登录
+POST {{host}}/api/auth/logout
+Authorization: Bearer {{token}}
+
+### 获取用户基本信息
+GET {{host}}/api/auth/info
+Authorization: Bearer {{token}}
+
+### 获取用户详细信息
+GET {{host}}/api/auth/user/info
+Authorization: Bearer {{token}}
+
+### 获取用户列表（基础）
+GET {{host}}/api/user/list
+Authorization: Bearer {{token}}
+
+### 获取用户列表（带分页）
+GET {{host}}/api/user/list?page=1&pageSize=20
+Authorization: Bearer {{token}}
+
+### 获取用户列表（带筛选）
+GET {{host}}/api/user/list?username=test&status=online
+Authorization: Bearer {{token}}
+
+### 获取单个用户信息
+GET {{host}}/api/users/1
+Authorization: Bearer {{token}}
+
+### 用户注册
+POST {{host}}/api/users/register
+Content-Type: application/json
+
+{
+  "username": "huangmin",
+  "password": "123456",
+  "nickname": "测试用户",
+  "avatar": "https://example.com/avatar.jpg",
+  "gender": "male",
+  "birthday": "1990-01-01",
+  "phone": "13800138001",
+  "email": "test@example1.com",
+  "signature": "这是我的个性签名",
+  "device_info": {
+    "device_type": "mobile",
+    "device_name": "iPhone 12",
+    "os_version": "iOS 15.0",
+    "app_version": "1.0.0"
+  }
+} 
